@@ -1,0 +1,14 @@
+{
+    "preset": "crockford",
+    "disallowMultipleVarDecl" : true,
+    "requireMultipleVarDecl": false,
+    "disallowMultipleLineBreaks": true,
+    "safeContextKeyword": ["self"],
+    "requireVarDeclFirst": false,
+    "requirePaddingNewLinesBeforeLineComments": {
+        "allExcept": "firstAfterCurly"
+    },
+    "validateIndentation": 4,
+    "requireTrailingComma": false,
+    "disallowDanglingUnderscores": false
+}
