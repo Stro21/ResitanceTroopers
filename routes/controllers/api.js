@@ -1,10 +1,11 @@
-var Usuario = require('../models/usuario');
-var TokenLog = require('../models/tokenlog');
-var validar = require("../functions/validar");
-var encriptar = require("../functions/encriptar");
+var Usuario = require('../../models/usuario');
+var TokenLog = require('../../models/tokenlog');
+var validar = require("../../functions/validar");
+var encriptar = require("../../functions/encriptar");
 
 //pagina inicial
 exports.main = function(req, res){
+
   var indice = [
     "<html>",
     "<p>GET /usuarios = para mostrar todos los usuarios</p>",
@@ -18,7 +19,7 @@ exports.main = function(req, res){
     "</html>"
   ];
 
-res.setHeader('Contente-Type','text/html');
+  res.setHeader('Contente-Type','text/html');
   res.status(200).send(indice).end();
 };
 
@@ -29,6 +30,10 @@ exports.escuchando = function(port){
 
 //ingresar nuevo usuario forma 1 (por parte o por elemento)
 exports.ingresar_nuevo_usuario = function(req, res) {
+  if(!req.body.usuario || !req.body.nombre || !req.body.apellidos || !req.body.contraseña || !req.body.edad || !req.body.nivel_militar || !req.body.habilitado_para_usar_app){
+    return res.status(403).send({error: 'verifique los campos'}).end();
+  }
+
   var nuevo_usuario = new Usuario();
   nuevo_usuario.usuario = req.body.usuario.toLowerCase();
   nuevo_usuario.nombre = req.body.nombre.toLowerCase();
@@ -68,6 +73,10 @@ exports.obtener_usuarios = function(req, res){
 
 //obtener usuario por id
 exports.obtener_usuario_por_id = function(req, res){
+  if(!req.params.id){
+    return res.status(403).send({error: 'verifique los campos'}).end();
+  }
+
   Usuario.findOne({
     _id: req.params.id
   }).exec(function(err, usuario){
@@ -81,6 +90,10 @@ exports.obtener_usuario_por_id = function(req, res){
 
 //obtener usuario por cuenta
 exports.obtener_usuario_por_cuenta = function(req, res){
+  if(!req.params.usuario){
+    return res.status(403).send({error: 'verifique los campos'}).end();
+  }
+
   Usuario.findOne({
     usuario: req.params.usuario.toLowerCase()
   }).exec(function(err, usuario){
@@ -109,6 +122,10 @@ exports.borrar_todos_los_usuarios = function(req, res){
 
 //borrar usuario por id
 exports.borrar_usuario_por_id = function(req, res){
+  if(!req.params.id){
+    return res.status(403).send({error: 'verifique los campos'}).end();
+  }
+
  Usuario.findOneAndRemove({
    _id: req.params.id
  }, function(err, usuario){
@@ -122,6 +139,10 @@ exports.borrar_usuario_por_id = function(req, res){
 
 //modificar usuario por id
 exports.modificar_usario_por_id = function(req, res){
+  if(!req.body.usuario || !req.body.nombre || !req.body.apellidos || !req.body.contraseña || !req.body.edad || !req.body.nivel_militar || !req.body.habilitado_para_usar_app){
+    return res.status(403).send({error: 'verifique los campos'}).end();
+  }
+
   if(!validar.nivel_militar(req.body.nivel_militar)){
       return res.status(403).send({error: 'nivel militar a modificar no valido'}).end();
   }

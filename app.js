@@ -4,21 +4,22 @@ var http = require("http");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
 var server = http.createServer();
-var api = require('./routes/api');
-var api_login = require('./routes/login');
 var expressJWT = require("express-jwt");
-var port = 8000;
 var db = "mongodb://localhost/ejemplo";
 var key = "keydetesteo";
+var port = 8000;
+
+//MIS ARCHIVOS
+var api = require('./routes/controllers/api');
+var api_login = require('./routes/login/login');
+
 
 mongoose.connect(db);
 
-//usar bodyparser
+//configurar app
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
-app.use(expressJWT({ secret: key}).unless({path: ['./routes/login', './routes/api', 'app.js']}));
+app.use(bodyParser.urlencoded({extended: true}));
+//app.use(expressJWT({secret: key}).unless({path: ['./routes/login']}));
 
 //******************************LLAMADAS***********************************************************************
 
