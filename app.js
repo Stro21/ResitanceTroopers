@@ -5,8 +5,7 @@ var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
 var server = http.createServer();
 var expressJWT = require("express-jwt");
-//var db = "mongodb://localhost/ejemplo";
-var db = "mongodb:https://resistancetroopers.herokuapp.com/";
+var db = "mongodb://localhost/ejemplo";
 var key = "keydetesteo";
 var port = 8000;
 

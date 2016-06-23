@@ -38,7 +38,7 @@ exports.verify = function(token, callback) {
 
 //escuchando en puerto
 exports.escuchando = function(port){
-  console.log("Escuchando en: https://resistancetroopers.herokuapp.com/:" + port);
+  console.log("Escuchando en: http://localhost:" + port);
 };
 
 //ingresar nuevo usuario forma 1 (por parte o por elemento)
