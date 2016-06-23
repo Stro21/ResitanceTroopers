@@ -15,6 +15,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Stro21/ResitanceTroopers.git"
+  },
+  "author": "Eduardo de la Hoz, Eduardo Straub",
+  "license": "ISC",
+  "keywords": [
+    "node",
+    "heroku",
+    "express"
+  ],
 }
