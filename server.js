@@ -21,7 +21,7 @@ app.use(api.validar_token);
 //escuchando en puerto
 app.listen(port, api.escuchando(port));
 //pagina inicial
-app.get("/usuarios/main", api.main);
+app.get("/", api.main);
 //obtener usuario por id
 app.get("/usuarios/:id", api.obtener_usuario_por_id);
 //obtener todos los usuarios api.obtener_usuarios
