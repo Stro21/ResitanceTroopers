@@ -1,5 +1,4 @@
 var crypto = require('crypto');
-//var key = require("key").key();
 
 exports.sha1 = function (clave) {
     var myClave = crypto.createHash("sha1");
@@ -8,6 +7,8 @@ exports.sha1 = function (clave) {
 };
 
 exports.pbkdf2 = function(clave){
-    var key = crypto.pbkdf2Sync(clave, 'salt', 100000, 512, 'sha512');
+    var buf = crypto.randomBytes(16);
+    buf.toString('hex');
+    var key = crypto.pbkdf2Sync(clave, buf, 100000, 512, 'sha512');
     return key.toString('hex');
 }
