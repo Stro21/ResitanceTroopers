@@ -40,8 +40,4 @@ app.put("/usuarios/:id", api.modificar_usario_por_id);
 app.post("/login", api.login);
 
 //escuchando en puerto
-//app.listen(port, api.escuchando(port));
-
-app.listen(app.get('port'), function() {
-  console.log('Corriendo en putero: ', app.get('port'));
-});
+app.listen(app.get('port'), api.escuchando);
