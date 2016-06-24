@@ -18,8 +18,6 @@ app.use(api.validar_token);
 
 //******************************LLAMADAS***********************************************************************
 
-//escuchando en puerto
-app.listen(port, api.escuchando(port));
 //pagina inicial
 app.get("/", api.main);
 //obtener usuario por id
@@ -38,3 +36,6 @@ app.delete("/usuarios/:id", api.borrar_usuario_por_id);
 app.put("/usuarios/:id", api.modificar_usario_por_id);
 //login
 app.post("/login", api.login);
+
+//escuchando en puerto
+app.listen(port, api.escuchando(port));
