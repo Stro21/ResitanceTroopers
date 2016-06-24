@@ -20,8 +20,8 @@ exports.main = function (req, res) {
 };
 
 //escuchando en puerto
-exports.escuchando = function (port) {
-    console.log("Escuchando en: http://localhost:" + port);
+exports.escuchando = function() {
+  console.log('Corriendo en putero: ', app.get('port'));
 };
 
 //ingresar nuevo usuario
