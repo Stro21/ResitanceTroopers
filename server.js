@@ -15,8 +15,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(expressJWT({secret: key}).unless({path: ['/login', '/usuarios/ingresar']}));
 app.use(api.validar_token);
-/*app.set('port', (process.env.PORT || 5000));
-app.use(express.static(__dirname + '/public'));*/
+app.set('port', (process.env.PORT || 5000));
+app.use(express.static(__dirname + '/public'));
 
 //******************************LLAMADAS***********************************************************************
 
@@ -40,8 +40,8 @@ app.put("/usuarios/:id", api.modificar_usario_por_id);
 app.post("/login", api.login);
 
 //escuchando en puerto
-app.listen(port, api.escuchando(port));
+//app.listen(port, api.escuchando(port));
 
-/*app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
-});*/
+app.listen(app.get('port'), function() {
+  console.log('Corriendo en putero: ', app.get('port'));
+});
