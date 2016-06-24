@@ -4,7 +4,7 @@ var http = require("http");
 var bodyParser = require("body-parser");
 var server = http.createServer();
 var expressJWT = require("express-jwt");
-var port = 3000;
+var port = 5000;
 
 //MIS ARCHIVOS
 var api = require('./routes/controllers/api');
