@@ -22,18 +22,9 @@ exports.main = function(req, res){
     "</html>"
   ];
 
-  res.setHeader('Contente-Type','text/html');
+  res.statusCode = 200;
+  res.setHeader('Contente-Type', 'text/plain');
   res.status(200).send(indice).end();
-};
-
-// Verifies token on a request
-exports.verify = function(token, callback) {
-  return jwt.verify(
-    token, // The token to be verified
-    tokenSecret, // Same token we used to sign
-    {}, // No Option, for more see https://github.com/auth0/node-jsonwebtoken#jwtverifytoken-secretorpublickey-options-callback
-    callback //Pass errors or decoded token to callback
-  );
 };
 
 //escuchando en puerto
@@ -41,7 +32,7 @@ exports.escuchando = function(port){
   console.log("Escuchando en: http://localhost:" + port);
 };
 
-//ingresar nuevo usuario forma 1 (por parte o por elemento)
+//ingresar nuevo usuario
 exports.ingresar_nuevo_usuario = function(req, res) {
   if(!req.body.usuario || !req.body.nombre || !req.body.apellidos || !req.body.contraseña || !req.body.edad || !req.body.nivel_militar || !req.body.habilitado_para_usar_app){
     return res.status(403).send({error: 'verifique los campos'}).end();
@@ -57,44 +48,30 @@ exports.ingresar_nuevo_usuario = function(req, res) {
   nuevo_usuario.habilitado_para_usar_app = req.body.habilitado_para_usar_app;
 
   if(!validar.nivel_militar(nuevo_usuario.nivel_militar)){
-      res.status(403).send({error: 'nivel militar a ingresar no valido'}).end();
+      res.status(403).send({error: 'nivel militar a ingresar no valido (soldado, oficial o capitán)'}).end();
   }
 
   nuevo_usuario.save(function(err, usuario){
     if(err){
       return res.status(403).send({error: 'no se pudo ingresar el usuario', mensaje: err.message}).end();
+    }else if(!err){
+      return res.status(200).send({ok: 'usuario ingresado con éxito', usuario: usuario}).end();
     }
-
-    return res.status(200).send({ok: 'usuario ingresado con éxito', usuario: usuario}).end();
-    });
+  });
 };
-
-// verify a token symmetric
-jwt.verify(token, key, function(err, decoded) {
-    //console.log(decoded) // bar
-    return;
-});
 
 //obtener todos los usuarios
 exports.obtener_usuarios = function(req, res){
-  /*return jwt.verify(
-    token, // The token to be verified
-    tokenSecret, // Same token we used to sign
-    {}, // No Option, for more see https://github.com/auth0/node-jsonwebtoken#jwtverifytoken-secretorpublickey-options-callback
-    callback //Pass errors or decoded token to callback
-  );*/
-
-
   Usuario.find({}).exec(function(err, usuarios){
     if(err){
       return res.status(403).send({error: 'no se pudieron obtener los usuarios', mensaje: err.message}).end();
     }
 
-    if(usuarios.length === 0){
+    if(!usuarios || usuarios.length === 0){
       return res.status(404).send({error: 'no hay usuarios para mostrar'}).end();
+    }else if(usuarios){
+      return res.status(200).send({ok: 'usuarios obtenidos con éxito', usuarios: usuarios}).end();
     }
-
-    return res.status(200).send({ok: 'usuarios obtenidos con éxito', usuarios: usuarios}).end();
   });
 };
 
@@ -111,7 +88,11 @@ exports.obtener_usuario_por_id = function(req, res){
       return res.status(403).send({error: 'no se pudo obtener el usuario', mensaje: err.message}).end();
     }
 
-    return res.status(200).send({ok: 'usuario obtenido con éxito', usuario: usuario}).end();
+    if(!usuario || usuario.length === 0){
+      return res.status(404).send({error: 'no se encontró el usuario'}).end();
+    }else if(usuarios){
+      return res.status(200).send({ok: 'usuario obtenido con éxito', usuario: usuario}).end();
+    }
   });
 };
 
@@ -128,11 +109,11 @@ exports.obtener_usuario_por_cuenta = function(req, res){
       return res.status(403).send({error: 'no se pudo obtener el usuario', mensaje: err.message}).end();
     }
 
-    if(!usuario){
-      return res.status(404).send({error: 'no se encontró el usuario ' + req.params.usuario.toLowerCase()}).end();
+    if(!usuario || usuario.length === 0){
+      return res.status(404).send({error: 'no se encontró el usuario'}).end();
+    }else if(usuario){
+      return res.status(200).send({ok: 'usuario obtenido con éxito', usuario: usuario}).end();
     }
-
-    return res.status(200).send({ok: 'usuario obtenido con éxito', usuario: usuario}).end();
   });
 };
 
@@ -141,10 +122,10 @@ exports.borrar_todos_los_usuarios = function(req, res){
   Usuario.remove({}, function(err, usuarios){
     if(err){
       return res.status(403).send({error: 'no se pudieron borrar los usuarios', mensaje: err.message}).end();
+    } else if(!err) {
+      return res.status(200).send({ok: 'usuarios borrados con éxito'}).end();
     }
-
-    return res.status(200).send({ok: 'usuarios borrados con éxito', usuarios: usuarios}).end();
-    });
+  });
 };
 
 //borrar usuario por id
@@ -160,7 +141,11 @@ exports.borrar_usuario_por_id = function(req, res){
      return res.status(403).send({error: 'no se pudo borrar el usuario', mensaje: err.message}).end();
    }
 
-   return res.status(200).send({ok: 'usuario borrado con éxito', usuario: usuario}).end();
+   if(!usuario || usuario.length === 0){
+     return res.status(404).send({error: 'no se encontró el usuario'}).end();
+   }else if(usuario){
+     return res.status(200).send({ok: 'usuario borrado con éxito'}).end();
+   }
  });
 };
 
@@ -171,7 +156,7 @@ exports.modificar_usario_por_id = function(req, res){
   }
 
   if(!validar.nivel_militar(req.body.nivel_militar)){
-      return res.status(403).send({error: 'nivel militar a modificar no valido'}).end();
+      return res.status(403).send({error: 'nivel militar a modificar no valido (soldado, oficial o capitán)'}).end();
   }
 
   Usuario.findOneAndUpdate({_id: req.params.id},
@@ -185,19 +170,23 @@ exports.modificar_usario_por_id = function(req, res){
         nivel_militar: req.body.nivel_militar.toLowerCase(),
         habilitado_para_usar_app: req.body.habilitado_para_usar_app
       }},
-  {upsert: true}, function(err, usuario){
+  {upsert: false}, function(err, usuario){
     if(err){
       return res.status(403).send({error: 'no se pudo modificar el usuario', mensaje: err.message}).end();
     }
 
-    return res.status(200).send({ok: 'usuario modificado con éxito', usuario: usuario}).end();
-    });
+    if(!usuario){
+      return res.status(403).send({error: 'no se encontró el usuario'}).end();
+    }else if(usuario){
+      return res.status(200).send({ok: 'usuario modificado con éxito', usuario: usuario}).end();
+    }
+  });
 };
 
 //login
 exports.login = function(req, res){
-  if(!req.body.usuario){
-    return res.status(403).send({error: 'verifique los campos', user: req.params.usuario}).end();
+  if(!req.body.usuario || !req.body.contraseña){
+    return res.status(403).send({error: 'verifique los campos'}).end();
   }
 
   Usuario.findOne({
@@ -217,7 +206,8 @@ exports.login = function(req, res){
       }else{
         var datos = {
           usuario: req.body.usuario.toLowerCase(),
-          contraseña: encriptar.sha1(req.body.contraseña)
+          contraseña: encriptar.sha1(req.body.contraseña),
+          login: "logeado"
         };
 
         token = jwt.sign(datos, key, {

@@ -3,9 +3,9 @@ var app = express();
 var http = require("http");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
-var server = http.createServer();
+var server = http.createServer(/*handleRequestTextPlain*/);
 var expressJWT = require("express-jwt");
-var db = "mongodb://<dbuser>:<dbpassword>@ds023074.mlab.com:23074/heroku_gfwc4rwz";
+var db = "mongodb://localhost/ejemplo";
 var key = "keydetesteo";
 var port = 8000;
 
@@ -50,3 +50,9 @@ app.put("/usuarios/:id", api.modificar_usario_por_id);
 
 //login
 app.post("/login", api.login);
+
+/*function handleRequestTextPlain(request, response){
+  response.statusCode = 200;
+  response.setHeader('Contente-Type', 'text/plain');
+  response.end('Correcto' + request.url);
+};*/
