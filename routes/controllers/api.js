@@ -19,11 +19,6 @@ exports.main = function (req, res) {
     return res.status(200).send({ok: 'Cargado con éxito'}).end();
 };
 
-//escuchando en puerto
-exports.escuchando = function() {
-  console.log('Corriendo en putero: ', app.get('port'));
-};
-
 //ingresar nuevo usuario
 exports.ingresar_nuevo_usuario = function (req, res) {
     if (!req.body.usuario || !req.body.nombre || !req.body.apellidos || !req.body.contraseña || !req.body.edad || !req.body.nivel_militar || !req.body.habilitado_para_usar_app) {
