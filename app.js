@@ -5,7 +5,7 @@ var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
 var server = http.createServer(/*handleRequestTextPlain*/);
 var expressJWT = require("express-jwt");
-var db = "mongodb://<dbuser>:<dbpassword>@ds023074.mlab.com:23074/heroku_gfwc4rwz";
+var db = "  mongodb://<Stro>:<Hola1234>@ds023064.mlab.com:23064/heroku_x76mjpd2";
 var key = "keydetesteo";
 var port = 8000;
 
