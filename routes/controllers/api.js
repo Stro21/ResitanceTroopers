@@ -1,6 +1,6 @@
 var jwt = require("jsonwebtoken");
 var mongoose = require("mongoose");
-var db = "mongodb://eduardo.ing.udp@gmail.com:xxeduhxx22@ds023064.mlab.com:23064/heroku_x76mjpd2";
+var db = "mongodb://heroku_x76mjpd2:xxeduhxx22@ds023064.mlab.com:23064/ejemplo";
 mongoose.connect(db);
 
 //mis archivos
