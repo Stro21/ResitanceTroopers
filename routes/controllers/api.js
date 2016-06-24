@@ -212,9 +212,9 @@ exports.obtener_batallones = function (req, res) {
 
 //modificar batallon por id
 exports.modificar_batallon_por_id = function (req, res) {
-    if (!req.body.nombre || !req.body.nombre_capitan || !req.body.latitud || !req.body.longitud || !req.body.cantidad_de_soldados_activos) {
+    /*if (!req.body.nombre || !req.body.nombre_capitan || !req.body.latitud || !req.body.longitud || !req.body.cantidad_de_soldados_activos) {
         return res.status(400).send({error: 'verifique los campos'}).end();
-    }
+    }*/
 
     Batallon.findOneAndUpdate({_id: req.params.id},
             {$set:
