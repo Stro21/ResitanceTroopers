@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 //app.use(expressJWT({secret: key}).unless({path: ['/login', '/usuarios/ingresar']}));
 //app.use(api.validar_token);
 app.set('port', (process.env.PORT || 5000));
-app.use(express.static(__diame + '/public'));
+app.use(express.static('/public'));
 
 //******************************LLAMADAS***********************************************************************
 
