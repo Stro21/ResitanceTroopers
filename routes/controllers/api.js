@@ -1,7 +1,7 @@
 var jwt = require("jsonwebtoken");
 var mongoose = require("mongoose");
-//var db = "mongodb://ejemplo:xxeduhxx22@ds023064.mlab.com:23064/heroku_x76mjpd2";
-var db = "mongodb://localhost/trooper";
+var db = "mongodb://ejemplo:xxeduhxx22@ds023064.mlab.com:23064/heroku_x76mjpd2";
+//var db = "mongodb://localhost/trooper";
 
 mongoose.connect(db);
 
