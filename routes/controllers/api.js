@@ -28,7 +28,7 @@ exports.main = function (req, res) {
 
     res.statusCode = 200;
     res.setHeader('Contente-Type', 'text/plain');
-    res.status(200).send(indice).end();
+    return res.status(200).send({ok: 'Cargado con éxito'}).end();
 };
 
 //escuchando en puerto
