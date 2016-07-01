@@ -9,6 +9,6 @@ exports.sha1 = function (clave) {
 exports.pbkdf2 = function(clave){
     var buf = crypto.randomBytes(16);
     buf.toString('hex');
-    var key = crypto.pbkdf2Sync(clave, 'salt', 100000, 512, 'sha512');
+    var key = crypto.pbkdf2Sync(clave, buf, 100000, 512, 'sha512');
     return key.toString('hex');
 }
