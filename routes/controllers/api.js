@@ -1,7 +1,9 @@
 var jwt = require("jsonwebtoken");
 var mongoose = require("mongoose");
-var db = "mongodb://ejemplo:xxeduhxx22@ds023064.mlab.com:23064/heroku_x76mjpd2";
-//var db = "mongodb://localhost/trooper";
+//var db = "mongodb://ejemplo:xxeduhxx22@ds023064.mlab.com:23064/heroku_x76mjpd2";
+var db = "mongodb://localhost/trooper";
+var rango = 100;
+var criterio = 80;
 
 mongoose.connect(db);
 
@@ -149,6 +151,17 @@ exports.modificar_usario_por_id = function (req, res) {
         return res.status(400).send({error: 'nivel militar a modificar no valido (soldado, oficial o capitán)'}).end();
     }
 
+
+  var actual_user = {
+    usuario: req.body.usuario.toLowerCase(),
+    nombre: req.body.nombre.toLowerCase(),
+    apellidos: req.body.apellidos.toLowerCase(),
+    contraseña: encriptar.pbkdf2(req.body.contraseña),
+    edad: req.body.edad,
+    nivel_militar: req.body.nivel_militar.toLowerCase(),
+    habilitado_para_usar_app: req.body.habilitado_para_usar_app
+  }
+
     Usuario.findOneAndUpdate({_id: req.params.id},
             {$set:
                           {
@@ -168,7 +181,7 @@ exports.modificar_usario_por_id = function (req, res) {
         if (!usuario) {
             return res.status(404).send({error: 'no se encontró el usuario'}).end();
         } else if (usuario) {
-            return res.status(201).send({ok: 'usuario modificado con éxito', usuario: usuario}).end();
+            return res.status(201).send({ok: 'usuario modificado con éxito', usuario: actual_user}).end();
         }
     });
 };
@@ -212,28 +225,50 @@ exports.obtener_batallones = function (req, res) {
 
 //modificar batallon por id
 exports.modificar_batallon_por_id = function (req, res) {
-    /*if (!req.body.nombre || !req.body.nombre_capitan || !req.body.latitud || !req.body.longitud || !req.body.cantidad_de_soldados_activos) {
-        return res.status(400).send({error: 'verifique los campos'}).end();
+    /*if (!req.body.nombre && !req.body.nombre_capitan && !req.body.latitud && !req.body.longitud && !req.body.cantidad_de_soldados_activos) {
+        return res.status(400).send({error: 'ingrese al menos un campo'}).end();
     }*/
 
-    Batallon.findOneAndUpdate({_id: req.params.id},
-            {$set:
-                          {
-                            nombre: req.body.nombre.toLowerCase(),
-                            nombre_capitan: req.body.nombre_capitan.toLowerCase(),
-                            latitud: req.body.latitud,
-                            longitud: req.body.longitud,
-                            cantidad_de_soldados_activos: req.body.cantidad_de_soldados_activos
-                          }},
-            {upsert: false}, function (err, batallon) {
+    var batallon_encontrado = {};
+    Batallon.findOne({
+        _id: req.params.id
+    }).exec(function (err, batallon) {
         if (err) {
             return res.status(500).send({error: 'no se pudo modificar el batallon', mensaje: err.message}).end();
         }
 
-        if (!batallon) {
+        if (!batallon || batallon.length === 0) {
             return res.status(404).send({error: 'no se encontró el batallon'}).end();
         } else if (batallon) {
-            return res.status(201).send({ok: 'batallon modificado con éxito', batallon: batallon}).end();
+
+              var actual_batallon = {
+                nombre: !req.body.nombre ? batallon.nombre : req.body.nombre.toLowerCase(),
+                nombre_capitan: !req.body.nombre_capitan ? batallon.nombre_capitan : req.body.nombre_capitan.toLowerCase(),
+                latitud: !req.body.latitud ? batallon.latitud : req.body.latitud,
+                longitud: !req.body.longitud ? batallon.longitud : req.body.longitud,
+                cantidad_de_soldados_activos: !req.body.cantidad_de_soldados_activos ? batallon.cantidad_de_soldados_activos :  req.body.cantidad_de_soldados_activos
+              }
+
+              Batallon.findOneAndUpdate({_id: req.params.id},
+                      {$set:
+                        {
+                          nombre: actual_batallon.nombre,
+                          nombre_capitan: actual_batallon.nombre_capitan,
+                          latitud: actual_batallon.latitud,
+                          longitud: actual_batallon.longitud,
+                          cantidad_de_soldados_activos: actual_batallon.cantidad_de_soldados_activos
+                        }},
+                      {upsert: false}, function (err, batallon) {
+                  if (err) {
+                      return res.status(500).send({error: 'no se pudo modificar el batallon', mensaje: err.message}).end();
+                  }
+
+                  if (!batallon) {
+                      return res.status(404).send({error: 'no se encontró el batallon'}).end();
+                  } else if (batallon) {
+                      return res.status(201).send({ok: 'batallon modificado con éxito', batallon: actual_batallon}).end();
+                  }
+              });
         }
     });
 };
@@ -280,24 +315,65 @@ exports.obtener_batallon_por_id = function (req, res) {
     });
 };
 
+//obtener todos los ataques
+exports.obtener_ataques = function (req, res) {
+    Ataque.find({}).exec(function (err, ataques) {
+        if (err) {
+            return res.status(500).send({error: 'no se pudieron obtener los ataques', mensaje: err.message}).end();
+        }
+
+        if (!ataques || ataques.length === 0) {
+            return res.status(404).send({error: 'no hay ataques para mostrar'}).end();
+        } else if (ataques) {
+            return res.status(200).send({ok: 'ataques obtenidos con éxito', ataques: ataques}).end();
+        }
+    });
+};
+
 //ingresar nuevo ataque
-exports.atacar_a_batallon_por_id = function (req, res) {
-    if (!req.body.id_batallon_atacado || !req.body.id_batallon_atacante) {
+exports.atacar_posicion = function (req, res) {
+    if (!req.body.longitud_ataque || !req.body.latitud_ataque) {
         return res.status(400).send({error: 'verifique los campos'}).end();
     }
 
-    var probabilidad = generar.generar_random(1, 100);
-
-    var nuevo_ataque = new Ataque();
-    nuevo_ataque.id_batallon_atacado = req.body.id_batallon_atacado;
-    nuevo_ataque.id_batallon_atacante = req.body.id_batallon_atacante;
-    nuevo_ataque.probabilidad_de_exito = probabilidad;
-
-    nuevo_ataque.save(function (err, ataque) {
+    var batallones_atacados = [];
+    Batallon.find().exec(function (err, batallones) {
         if (err) {
-            return res.status(500).send({error: 'no se pudo atacar al batallon', mensaje: err.message}).end();
-        } else if (!err) {
-            return res.status(201).send({ok: 'batallon atacado con éxito', ataque: ataque}).end();
+          return res.status(500).send({error: 'no se pudo atacar al batallon', mensaje: err.message}).end();
+        }
+
+        if (!batallones || batallones.length === 0) {
+            return res.status(404).send({error: 'no hay batallones para atacar'}).end();
+        } else if (batallones) {
+          batallones.forEach(function(batallon){
+            //con la euclidana calculamos el resultado respecto del rango o de distancia de explosion a las tropas
+            if(Math.sqrt(Math.pow(batallon.latitud - req.body.latitud_ataque, 2) + Math.pow(batallon.longitud - req.body.longitud_ataque, 2)) <= rango){
+              batallones_atacados.push(batallon);
+            }
+          });
+
+          var criterio_mensaje = "que la probabilidad sea mayor o igual a un " + criterio + "% y las unidades de distancia sea menor o igual a " + rango;
+          var probabilidad = generar.generar_random(1, 100);
+          var exitoso = false;
+          if(probabilidad >= criterio){
+            exitoso = true;
+          }
+
+          var nuevo_ataque = new Ataque();
+          nuevo_ataque.longitud_ataque = req.body.longitud_ataque;
+          nuevo_ataque.latitud_ataque = req.body.latitud_ataque;
+          nuevo_ataque.probabilidad = probabilidad;
+          nuevo_ataque.ataque_exitoso = exitoso;
+          nuevo_ataque.criterio = criterio_mensaje;
+          nuevo_ataque.escuadrones_atacados = batallones_atacados;
+
+          nuevo_ataque.save(function (err, ataque) {
+              if (err) {
+                  return res.status(500).send({error: 'no se pudo atacar al batallon:2', mensaje: err}).end();
+              } else if (!err) {
+                  return res.status(201).send({ok: 'batallon(es) atacado(s)', ataque: ataque}).end();
+              }
+          });
         }
     });
 };
