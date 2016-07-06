@@ -59,7 +59,7 @@ exports.obtener_usuarios = function (req, res) {
             return res.status(500).send({error: 'no se pudieron obtener los usuarios', mensaje: err.message}).end();
         }
 
-        if (!usuarios || usuarios.length === 0) {
+        if (!usuarios) {
             return res.status(404).send({error: 'no hay usuarios para mostrar'}).end();
         } else if (usuarios) {
             return res.status(200).send({ok: 'usuarios obtenidos con éxito', usuarios: usuarios}).end();
@@ -80,9 +80,9 @@ exports.obtener_usuario_por_id = function (req, res) {
             return res.status(500).send({error: 'no se pudo obtener el usuario', mensaje: err.message}).end();
         }
 
-        if (!usuario || usuario.length === 0) {
+        if (!usuario) {
             return res.status(404).send({error: 'no se encontró el usuario'}).end();
-        } else if (usuarios) {
+        } else if (usuario) {
             return res.status(200).send({ok: 'usuario obtenido con éxito', usuario: usuario}).end();
         }
     });
@@ -101,7 +101,7 @@ exports.obtener_usuario_por_cuenta = function (req, res) {
             return res.status(500).send({error: 'no se pudo obtener el usuario', mensaje: err.message}).end();
         }
 
-        if (!usuario || usuario.length === 0) {
+        if (!usuario) {
             return res.status(404).send({error: 'no se encontró el usuario'}).end();
         } else if (usuario) {
             return res.status(200).send({ok: 'usuario obtenido con éxito', usuario: usuario}).end();
@@ -133,7 +133,7 @@ exports.borrar_usuario_por_id = function (req, res) {
             return res.status(500).send({error: 'no se pudo borrar el usuario', mensaje: err.message}).end();
         }
 
-        if (!usuario || usuario.length === 0) {
+        if (!usuario) {
             return res.status(404).send({error: 'no se encontró el usuario'}).end();
         } else if (usuario) {
             return res.status(200).send({ok: 'usuario eliminado con éxito'}).end();
@@ -143,7 +143,7 @@ exports.borrar_usuario_por_id = function (req, res) {
 
 //modificar usuario por id
 exports.modificar_usario_por_id = function (req, res) {
-    if ((req.body.nivel_militar || req.body.nivel_militar.length > 0) && !validar.nivel_militar(req.body.nivel_militar)) {
+    if (req.body.nivel_militar && !validar.nivel_militar(req.body.nivel_militar)) {
         return res.status(400).send({error: 'nivel militar a modificar no valido (soldado, oficial o capitán)'}).end();
     }
 
@@ -151,14 +151,14 @@ exports.modificar_usario_por_id = function (req, res) {
         _id: req.params.id
     }).exec(function (err, usuario) {
         if (err) {
-            return res.status(500).send({error: 'no se pudo obtener el usuario', mensaje: err.message}).end();
+            return res.status(500).send({error: 'no se pudo modificar el usuario', mensaje: err.message}).end();
         }
 
-        if (!usuario || usuario.length === 0) {
+        if (!usuario) {
             return res.status(404).send({error: 'no se encontró el usuario'}).end();
         } else if (usuario) {
 
-          var actual_user = {
+          var actual_usuario = {
             usuario: !req.body.usuario ? usuario.usuario : req.body.usuario.toLowerCase(),
             nombre: !req.body.nombre ? usuario.nombre : req.body.nombre.toLowerCase(),
             apellidos: !req.body.apellidos ? usuario.apellidos : req.body.apellidos.toLowerCase(),
@@ -169,16 +169,7 @@ exports.modificar_usario_por_id = function (req, res) {
           }
 
           Usuario.findOneAndUpdate({_id: req.params.id},
-          {$set:
-            {
-              usuario: req.body.usuario.toLowerCase(),
-              nombre: req.body.nombre.toLowerCase(),
-              apellidos: req.body.apellidos.toLowerCase(),
-              contraseña: encriptar.pbkdf2(req.body.contraseña),
-              edad: req.body.edad,
-              nivel_militar: req.body.nivel_militar.toLowerCase(),
-              habilitado_para_usar_app: req.body.habilitado_para_usar_app
-            }},
+          {$set: actual_usuario},
             {upsert: false}, function (err, usuario) {
               if (err) {
                 return res.status(500).send({error: 'no se pudo modificar el usuario', mensaje: err.message}).end();
@@ -187,7 +178,7 @@ exports.modificar_usario_por_id = function (req, res) {
               if (!usuario) {
                 return res.status(404).send({error: 'no se encontró el usuario'}).end();
               } else if (usuario) {
-                return res.status(201).send({ok: 'usuario modificado con éxito', usuario: actual_user}).end();
+                return res.status(201).send({ok: 'usuario modificado con éxito', usuario: actual_usuario}).end();
               }
             });
         }
@@ -223,7 +214,7 @@ exports.obtener_batallones = function (req, res) {
             return res.status(500).send({error: 'no se pudieron obtener los batallones', mensaje: err.message}).end();
         }
 
-        if (!batallones || batallones.length === 0) {
+        if (!batallones) {
             return res.status(404).send({error: 'no hay batallones para mostrar'}).end();
         } else if (batallones) {
             return res.status(200).send({ok: 'batallones obtenidos con éxito', batallones: batallones}).end();
@@ -240,7 +231,7 @@ exports.modificar_batallon_por_id = function (req, res) {
             return res.status(500).send({error: 'no se pudo modificar el batallon', mensaje: err.message}).end();
         }
 
-        if (!batallon || batallon.length === 0) {
+        if (!batallon) {
             return res.status(404).send({error: 'no se encontró el batallon'}).end();
         } else if (batallon) {
 
@@ -253,14 +244,7 @@ exports.modificar_batallon_por_id = function (req, res) {
               }
 
               Batallon.findOneAndUpdate({_id: req.params.id},
-                      {$set:
-                        {
-                          nombre: actual_batallon.nombre,
-                          nombre_capitan: actual_batallon.nombre_capitan,
-                          latitud: actual_batallon.latitud,
-                          longitud: actual_batallon.longitud,
-                          cantidad_de_soldados_activos: actual_batallon.cantidad_de_soldados_activos
-                        }},
+                      {$set: actual_batallon},
                       {upsert: false}, function (err, batallon) {
                   if (err) {
                       return res.status(500).send({error: 'no se pudo modificar el batallon', mensaje: err.message}).end();
@@ -289,7 +273,7 @@ exports.borrar_batallon_por_id = function (req, res) {
             return res.status(500).send({error: 'no se pudo borrar el batallon', mensaje: err.message}).end();
         }
 
-        if (!batallon || batallon.length === 0) {
+        if (!batallon) {
             return res.status(404).send({error: 'no se encontró el batallon'}).end();
         } else if (batallon) {
             return res.status(200).send({ok: 'batallon eliminado con éxito'}).end();
@@ -310,7 +294,7 @@ exports.obtener_batallon_por_id = function (req, res) {
             return res.status(500).send({error: 'no se pudo obtener el batallon', mensaje: err.message}).end();
         }
 
-        if (!batallon || batallon.length === 0) {
+        if (!batallon) {
             return res.status(404).send({error: 'no se encontró el batallon'}).end();
         } else if (batallon) {
             return res.status(200).send({ok: 'batallon obtenido con éxito', batallon: batallon}).end();
@@ -325,7 +309,7 @@ exports.obtener_ataques = function (req, res) {
             return res.status(500).send({error: 'no se pudieron obtener los ataques', mensaje: err.message}).end();
         }
 
-        if (!ataques || ataques.length === 0) {
+        if (!ataques) {
             return res.status(404).send({error: 'no hay ataques para mostrar'}).end();
         } else if (ataques) {
             return res.status(200).send({ok: 'ataques obtenidos con éxito', ataques: ataques}).end();
@@ -345,7 +329,7 @@ exports.atacar_posicion = function (req, res) {
           return res.status(500).send({error: 'no se pudo atacar al batallon', mensaje: err.message}).end();
         }
 
-        if (!batallones || batallones.length === 0) {
+        if (!batallones) {
             return res.status(404).send({error: 'no hay batallones para atacar'}).end();
         } else if (batallones) {
           batallones.forEach(function(batallon){
