@@ -143,45 +143,53 @@ exports.borrar_usuario_por_id = function (req, res) {
 
 //modificar usuario por id
 exports.modificar_usario_por_id = function (req, res) {
-    if (!req.body.usuario || !req.body.nombre || !req.body.apellidos || !req.body.contraseña || !req.body.edad || !req.body.nivel_militar || !req.body.habilitado_para_usar_app) {
-        return res.status(400).send({error: 'verifique los campos'}).end();
-    }
-
-    if (!validar.nivel_militar(req.body.nivel_militar)) {
+    if ((req.body.nivel_militar || req.body.nivel_militar.length > 0) && !validar.nivel_militar(req.body.nivel_militar)) {
         return res.status(400).send({error: 'nivel militar a modificar no valido (soldado, oficial o capitán)'}).end();
     }
 
-
-  var actual_user = {
-    usuario: req.body.usuario.toLowerCase(),
-    nombre: req.body.nombre.toLowerCase(),
-    apellidos: req.body.apellidos.toLowerCase(),
-    contraseña: encriptar.pbkdf2(req.body.contraseña),
-    edad: req.body.edad,
-    nivel_militar: req.body.nivel_militar.toLowerCase(),
-    habilitado_para_usar_app: req.body.habilitado_para_usar_app
-  }
-
-    Usuario.findOneAndUpdate({_id: req.params.id},
-            {$set:
-                          {
-                            usuario: req.body.usuario.toLowerCase(),
-                            nombre: req.body.nombre.toLowerCase(),
-                            apellidos: req.body.apellidos.toLowerCase(),
-                            contraseña: encriptar.pbkdf2(req.body.contraseña),
-                            edad: req.body.edad,
-                            nivel_militar: req.body.nivel_militar.toLowerCase(),
-                            habilitado_para_usar_app: req.body.habilitado_para_usar_app
-                          }},
-            {upsert: false}, function (err, usuario) {
+    Usuario.findOne({
+        _id: req.params.id
+    }).exec(function (err, usuario) {
         if (err) {
-            return res.status(500).send({error: 'no se pudo modificar el usuario', mensaje: err.message}).end();
+            return res.status(500).send({error: 'no se pudo obtener el usuario', mensaje: err.message}).end();
         }
 
-        if (!usuario) {
+        if (!usuario || usuario.length === 0) {
             return res.status(404).send({error: 'no se encontró el usuario'}).end();
         } else if (usuario) {
-            return res.status(201).send({ok: 'usuario modificado con éxito', usuario: actual_user}).end();
+
+          var actual_user = {
+            usuario: !req.body.usuario ? usuario.usuario : req.body.usuario.toLowerCase(),
+            nombre: !req.body.nombre ? usuario.nombre : req.body.nombre.toLowerCase(),
+            apellidos: !req.body.apellidos ? usuario.apellidos : req.body.apellidos.toLowerCase(),
+            contraseña: !req.body.contraseña ? usuario.contraseña  : encriptar.pbkdf2(req.body.contraseña),
+            edad: !req.body.edad ? usuario.edad : req.body.edad,
+            nivel_militar: !req.body.nivel_militar ? usuario.nivel_militar : req.body.nivel_militar.toLowerCase(),
+            habilitado_para_usar_app: !req.body.habilitado_para_usar_app ? usuario.habilitado_para_usar_app : req.body.habilitado_para_usar_app
+          }
+
+          Usuario.findOneAndUpdate({_id: req.params.id},
+          {$set:
+            {
+              usuario: req.body.usuario.toLowerCase(),
+              nombre: req.body.nombre.toLowerCase(),
+              apellidos: req.body.apellidos.toLowerCase(),
+              contraseña: encriptar.pbkdf2(req.body.contraseña),
+              edad: req.body.edad,
+              nivel_militar: req.body.nivel_militar.toLowerCase(),
+              habilitado_para_usar_app: req.body.habilitado_para_usar_app
+            }},
+            {upsert: false}, function (err, usuario) {
+              if (err) {
+                return res.status(500).send({error: 'no se pudo modificar el usuario', mensaje: err.message}).end();
+              }
+
+              if (!usuario) {
+                return res.status(404).send({error: 'no se encontró el usuario'}).end();
+              } else if (usuario) {
+                return res.status(201).send({ok: 'usuario modificado con éxito', usuario: actual_user}).end();
+              }
+            });
         }
     });
 };
@@ -225,11 +233,6 @@ exports.obtener_batallones = function (req, res) {
 
 //modificar batallon por id
 exports.modificar_batallon_por_id = function (req, res) {
-    /*if (!req.body.nombre && !req.body.nombre_capitan && !req.body.latitud && !req.body.longitud && !req.body.cantidad_de_soldados_activos) {
-        return res.status(400).send({error: 'ingrese al menos un campo'}).end();
-    }*/
-
-    var batallon_encontrado = {};
     Batallon.findOne({
         _id: req.params.id
     }).exec(function (err, batallon) {
