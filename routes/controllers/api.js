@@ -1,7 +1,7 @@
 var jwt = require("jsonwebtoken");
 var mongoose = require("mongoose");
-var db = "mongodb://ejemplo:xxeduhxx22@ds023064.mlab.com:23064/heroku_x76mjpd2";
-//var db = "mongodb://localhost/trooper";
+//var db = "mongodb://ejemplo:xxeduhxx22@ds023064.mlab.com:23064/heroku_x76mjpd2";
+var db = "mongodb://localhost/trooper";
 var rango = 100;
 var criterio = 80;
 
@@ -303,24 +303,37 @@ exports.atacarBatallonPorId = function (req, res) {
       return res.status(400).send({error: 'verifique los campos'}).end();
     }
 
-    var criterio_mensaje = "que la probabilidad sea mayor o igual a un " + criterio + "%";
-    var probabilidad = generar.generar_random(1, 100);
-    var exitoso = false;
-    if(probabilidad >= criterio){
-      exitoso = true;
-    }
-
-    var nuevo_ataque = new AtaqueDirecto();
-    nuevo_ataque.probabilidad = probabilidad;
-    nuevo_ataque.ataque_exitoso = exitoso;
-    nuevo_ataque.criterio = criterio_mensaje;
-    nuevo_ataque.id_escuadron_atacado = req.params.id;
-
-    nuevo_ataque.save(function (err, ataque) {
+    Batallon.findOne({
+      _id: req.params.id
+    }).exec(function (err, batallon) {
         if (err) {
-            return res.status(500).send({error: 'no se pudo atacar al batallon', mensaje: err}).end();
-        } else if (!err) {
-            return res.status(201).send({ok: 'batallon atacado', ataque: ataque}).end();
+            return res.status(500).send({error: 'no se pudo obtener el batallon', mensaje: err.message}).end();
+        }
+
+        if (!batallon) {
+            return res.status(404).send({error: 'no se encontro el batallon'}).end();
+        } else if (batallon) {
+
+              var criterio_mensaje = "que la probabilidad sea mayor o igual a un " + criterio + "%";
+              var probabilidad = generar.generar_random(1, 100);
+              var exitoso = false;
+              if(probabilidad >= criterio){
+                exitoso = true;
+              }
+
+              var nuevo_ataque = new AtaqueDirecto();
+              nuevo_ataque.probabilidad = probabilidad;
+              nuevo_ataque.ataque_exitoso = exitoso;
+              nuevo_ataque.criterio = criterio_mensaje;
+              nuevo_ataque.id_escuadron_atacado = req.params.id;
+
+              nuevo_ataque.save(function (err, ataque) {
+                  if (err) {
+                      return res.status(500).send({error: 'no se pudo atacar al batallon', mensaje: err}).end();
+                  } else if (!err) {
+                      return res.status(201).send({ok: 'batallon atacado', ataque: ataque}).end();
+                  }
+              });
         }
     });
 };
@@ -352,7 +365,7 @@ exports.borrarTodosLosAtaques = function (req, res) {
 };
 
 /*OBJETIVOS*/
-//buscar batallones cercanos a un punto
+//buscar batallon cercano a un punto
 exports.consultarPunto = function (req, res) {
     if (!req.body.longitud || !req.body.latitud) {
         return res.status(400).send({error: 'verifique los campos'}).end();
