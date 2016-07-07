@@ -1,7 +1,7 @@
 var jwt = require("jsonwebtoken");
 var mongoose = require("mongoose");
-var db = "mongodb://ejemplo:xxeduhxx22@ds023064.mlab.com:23064/heroku_x76mjpd2";
-//var db = "mongodb://localhost/trooper";
+//var db = "mongodb://ejemplo:xxeduhxx22@ds023064.mlab.com:23064/heroku_x76mjpd2";
+var db = "mongodb://localhost/trooper";
 var rango = 100;
 var criterio = 80;
 
@@ -424,7 +424,7 @@ exports.login = function (req, res) {
 
         if (usuario) {
             if (encriptar.pbkdf2(req.body.contraseña) != usuario.contraseña) {
-                return res.status(404).send({error: 'usuario y/o contraseña no válidas'}).end();
+              return res.status(404).send({error: 'usuario y/o contraseña no válidas 2'}).end();
             } else {
                 var datos = {
                     usuario: req.body.usuario.toLowerCase(),
