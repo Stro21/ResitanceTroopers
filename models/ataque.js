@@ -8,7 +8,7 @@ var ataque = new Schema({
     ataque_exitoso: {type: Boolean, required: true, trim: true},
     criterio: {type: String, required: true, trim: true},
     escuadrones_atacados: [{
-      nombre: {type: String, trim: true, unique: true},
+      nombre: {type: String, trim: true},
       nombre_capitan: {type: String, trim: true},
       latitud: {type: Number, trim: true},
       longitud: {type: Number, trim: true},

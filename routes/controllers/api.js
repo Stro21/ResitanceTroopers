@@ -60,7 +60,7 @@ exports.obtener_usuarios = function (req, res) {
             return res.status(500).send({error: 'no se pudieron obtener los usuarios', mensaje: err.message}).end();
         }
 
-        if (!usuarios) {
+        if (!usuarios || usuarios.length === 0) {
             return res.status(404).send({error: 'no hay usuarios para mostrar'}).end();
         } else if (usuarios) {
             return res.status(200).send({ok: 'usuarios obtenidos con éxito', usuarios: usuarios}).end();
@@ -215,7 +215,7 @@ exports.obtener_batallones = function (req, res) {
             return res.status(500).send({error: 'no se pudieron obtener los batallones', mensaje: err.message}).end();
         }
 
-        if (!batallones) {
+        if (!batallones || batallones.length === 0) {
             return res.status(404).send({error: 'no hay batallones para mostrar'}).end();
         } else if (batallones) {
             return res.status(200).send({ok: 'batallones obtenidos con éxito', batallones: batallones}).end();
@@ -257,6 +257,17 @@ exports.modificar_batallon_por_id = function (req, res) {
                       return res.status(201).send({ok: 'batallon modificado con éxito', batallon: actual_batallon}).end();
                   }
               });
+        }
+    });
+};
+
+//borrar todos los batallones
+exports.borrar_todos_los_batallones = function (req, res) {
+    Batallon.remove({}, function (err, usuarios) {
+        if (err) {
+            return res.status(500).send({error: 'no se pudieron borrar los batallones', mensaje: err.message}).end();
+        } else if (!err) {
+            return res.status(200).send({ok: 'batallones eliminados con éxito'}).end();
         }
     });
 };
@@ -310,7 +321,7 @@ exports.obtener_ataques = function (req, res) {
             return res.status(500).send({error: 'no se pudieron obtener los ataques', mensaje: err.message}).end();
         }
 
-        if (!ataques) {
+        if (!ataques || ataques.length === 0) {
             return res.status(404).send({error: 'no hay ataques para mostrar'}).end();
         } else if (ataques) {
             return res.status(200).send({ok: 'ataques obtenidos con éxito', ataques: ataques}).end();
@@ -327,7 +338,7 @@ exports.atacar_posicion = function (req, res) {
     var batallones_atacados = [];
     Batallon.find().exec(function (err, batallones) {
         if (err) {
-          return res.status(500).send({error: 'no se pudo atacar al batallon', mensaje: err.message}).end();
+          return res.status(500).send({error: 'no se pudo atacar', mensaje: err.message}).end();
         }
 
         if (!batallones) {
@@ -357,11 +368,22 @@ exports.atacar_posicion = function (req, res) {
 
           nuevo_ataque.save(function (err, ataque) {
               if (err) {
-                  return res.status(500).send({error: 'no se pudo atacar al batallon:2', mensaje: err}).end();
+                  return res.status(500).send({error: 'no se pudo atacar ningun batallon', mensaje: err}).end();
               } else if (!err) {
                   return res.status(201).send({ok: 'batallon(es) atacado(s)', ataque: ataque}).end();
               }
           });
+        }
+    });
+};
+
+//borrar todos los ataques
+exports.borrar_todos_los_ataques = function (req, res) {
+    Ataque.remove({}, function (err, usuarios) {
+        if (err) {
+            return res.status(500).send({error: 'no se pudieron borrar los ataques', mensaje: err.message}).end();
+        } else if (!err) {
+            return res.status(200).send({ok: 'ataques eliminados con éxito'}).end();
         }
     });
 };
