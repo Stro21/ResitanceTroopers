@@ -25,41 +25,42 @@ app.get("/", api.main);
 
 /*USUARIOS*/
 //obtener usuario por id
-app.get("/usuarios/:id", api.obtener_usuario_por_id);
+app.get("/usuarios/:id", api.obtenerUsuarioPorId);
 //obtener todos los usuarios
-app.get("/usuarios", api.obtener_usuarios);
-//obtener usuario por cuenta
-app.get("/usuarios/cuenta/:usuario", api.obtener_usuario_por_cuenta);
+app.get("/usuarios", api.obtenerUsuarios);
 //ingresar nuevo usuario
-app.post("/usuarios", api.ingresar_nuevo_usuario);
+app.post("/usuarios", api.ingresarNuevoUsuario);
 //borrar todos los usuarios
-app.delete("/usuarios", api.borrar_todos_los_usuarios);
+app.delete("/usuarios", api.borrarTodosLosUsuarios);
 //borrar usuario por id
-app.delete("/usuarios/:id", api.borrar_usuario_por_id);
+app.delete("/usuarios/:id", api.borrarUsuarioPorId);
 //modificar usuario por id
-app.put("/usuarios/:id", api.modificar_usario_por_id);
+app.put("/usuarios/:id", api.modificarUsuarioPorId);
 
 /*BATALLONES*/
 //ingresar nuevo batallon
-app.post("/batallones", api.ingresar_nuevo_batallon);
+app.post("/batallones", api.ingresarNuevoBatallon);
 //borrar batallon por id
-app.delete("/batallones/:id", api.borrar_batallon_por_id);
+app.delete("/batallones/:id", api.borrarBatallonPorId);
 //borrar todos los batallones
-app.delete("/batallones", api.borrar_todos_los_batallones);
+app.delete("/batallones", api.borrarTodosLosBatallones);
 //modificar batallon por id
-app.put("/batallones/:id", api.modificar_batallon_por_id);
+app.put("/batallones/:id", api.modificarBatallonPorId);
 //obtener todos los batallon
-app.get("/batallones", api.obtener_batallones);
+app.get("/batallones", api.obtenerBatallones);
 //obtener batallon por id
-app.get("/batallones/:id", api.obtener_batallon_por_id);
+app.get("/batallones/:id", api.obtenerBatallonPorId);
+
+/*OBJETIVOS*/
+app.post("/objetivos", api.consultarPunto);
 
 /*ATAQUES*/
 //atacar a batallon
-app.post("/ataques", api.atacar_posicion);
+app.post("/ataques/:id", api.atacarBatallonPorId);
 //obtener todos los ataques
-app.get("/ataques", api.obtener_ataques);
+app.get("/ataques", api.obtenerAtaques);
 //borrar todos los ataques
-app.delete("/ataques", api.borrar_todos_los_ataques);
+app.delete("/ataques", api.borrarTodosLosAtaques);
 
 //login
 app.post("/login", api.login);

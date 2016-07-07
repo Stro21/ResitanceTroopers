@@ -11,9 +11,9 @@ mongoose.connect(db);
 var Usuario = require('../../models/usuario');
 var TokenLog = require('../../models/tokenlog');
 var Batallon = require('../../models/batallon');
+var Ataque = require('../../models/ataque');
 var AtaqueDirecto = require('../../models/ataque_directo');
 var validar = require("../../functions/validar");
-var funciones = require("../../functions/funciones");
 var encriptar = require("../../functions/encriptar");
 var generar = require("../../functions/generar");
 var key = require("../../functions/key").key();
@@ -28,7 +28,7 @@ exports.main = function (req, res) {
 
 /*USUARIOS*/
 //ingresar nuevo usuario
-exports.ingresarNuevoUsuario = function (req, res) {
+exports.ingresar_nuevo_usuario = function (req, res) {
     if (!req.body.usuario || !req.body.nombre || !req.body.apellidos || !req.body.contraseña || !req.body.edad || !req.body.nivel_militar || !req.body.habilitado_para_usar_app) {
         return res.status(400).send({error: 'verifique los campos'}).end();
     }
@@ -56,7 +56,7 @@ exports.ingresarNuevoUsuario = function (req, res) {
 };
 
 //obtener todos los usuarios
-exports.obtenerUsuarios = function (req, res) {
+exports.obtener_usuarios = function (req, res) {
     Usuario.find({}).exec(function (err, usuarios) {
         if (err) {
             return res.status(500).send({error: 'no se pudieron obtener los usuarios', mensaje: err.message}).end();
@@ -71,7 +71,7 @@ exports.obtenerUsuarios = function (req, res) {
 };
 
 //obtener usuario por id
-exports.obtenerUsuarioPorId = function (req, res) {
+exports.obtener_usuario_por_id = function (req, res) {
     if (!req.params.id) {
         return res.status(400).send({error: 'verifique los campos'}).end();
     }
@@ -91,8 +91,29 @@ exports.obtenerUsuarioPorId = function (req, res) {
     });
 };
 
+//obtener usuario por cuenta
+exports.obtener_usuario_por_cuenta = function (req, res) {
+    if (!req.params.usuario) {
+        return res.status(400).send({error: 'verifique los campos'}).end();
+    }
+
+    Usuario.findOne({
+        usuario: req.params.usuario.toLowerCase()
+    }).exec(function (err, usuario) {
+        if (err) {
+            return res.status(500).send({error: 'no se pudo obtener el usuario', mensaje: err.message}).end();
+        }
+
+        if (!usuario) {
+            return res.status(404).send({error: 'no se encontró el usuario'}).end();
+        } else if (usuario) {
+            return res.status(200).send({ok: 'usuario obtenido con éxito', usuario: usuario}).end();
+        }
+    });
+};
+
 //borrar todos los usuarios
-exports.borrarTodosLosUsuarios = function (req, res) {
+exports.borrar_todos_los_usuarios = function (req, res) {
     Usuario.remove({}, function (err, usuarios) {
         if (err) {
             return res.status(500).send({error: 'no se pudieron borrar los usuarios', mensaje: err.message}).end();
@@ -103,7 +124,7 @@ exports.borrarTodosLosUsuarios = function (req, res) {
 };
 
 //borrar usuario por id
-exports.borrarUsuarioPorId = function (req, res) {
+exports.borrar_usuario_por_id = function (req, res) {
     if (!req.params.id) {
         return res.status(400).send({error: 'verifique los campos'}).end();
     }
@@ -124,7 +145,7 @@ exports.borrarUsuarioPorId = function (req, res) {
 };
 
 //modificar usuario por id
-exports.modificarUsuarioPorId = function (req, res) {
+exports.modificar_usario_por_id = function (req, res) {
     if (req.body.nivel_militar && !validar.nivel_militar(req.body.nivel_militar)) {
       return res.status(400).send({error: 'nivel militar a ingresar no valido, los niveles disponibles son:', niveles_militares: niveles_militares}).end();
     }
@@ -169,7 +190,7 @@ exports.modificarUsuarioPorId = function (req, res) {
 
 /*BATALLONES*/
 //ingresar nuevo batallon
-exports.ingresarNuevoBatallon = function (req, res) {
+exports.ingresar_nuevo_batallon = function (req, res) {
     if (!req.body.nombre || !req.body.nombre_capitan || !req.body.latitud || !req.body.longitud || !req.body.cantidad_de_soldados_activos) {
         return res.status(400).send({error: 'verifique los campos'}).end();
     }
@@ -191,7 +212,7 @@ exports.ingresarNuevoBatallon = function (req, res) {
 };
 
 //obtener todos los batallones
-exports.obtenerBatallones = function (req, res) {
+exports.obtener_batallones = function (req, res) {
     Batallon.find({}).exec(function (err, batallones) {
         if (err) {
             return res.status(500).send({error: 'no se pudieron obtener los batallones', mensaje: err.message}).end();
@@ -206,7 +227,7 @@ exports.obtenerBatallones = function (req, res) {
 };
 
 //modificar batallon por id
-exports.modificarBatallonPorId = function (req, res) {
+exports.modificar_batallon_por_id = function (req, res) {
     Batallon.findOne({
         _id: req.params.id
     }).exec(function (err, batallon) {
@@ -244,7 +265,7 @@ exports.modificarBatallonPorId = function (req, res) {
 };
 
 //borrar todos los batallones
-exports.borrarTodosLosBatallones = function (req, res) {
+exports.borrar_todos_los_batallones = function (req, res) {
     Batallon.remove({}, function (err, usuarios) {
         if (err) {
             return res.status(500).send({error: 'no se pudieron borrar los batallones', mensaje: err.message}).end();
@@ -255,7 +276,7 @@ exports.borrarTodosLosBatallones = function (req, res) {
 };
 
 //borrar batallon por id
-exports.borrarBatallonPorId = function (req, res) {
+exports.borrar_batallon_por_id = function (req, res) {
     if (!req.params.id) {
         return res.status(400).send({error: 'verifique los campos'}).end();
     }
@@ -276,7 +297,7 @@ exports.borrarBatallonPorId = function (req, res) {
 };
 
 //obtener batallon por id
-exports.obtenerBatallonPorId = function (req, res) {
+exports.obtener_batallon_por_id = function (req, res) {
     if (!req.params.id) {
         return res.status(400).send({error: 'verifique los campos'}).end();
     }
@@ -297,36 +318,8 @@ exports.obtenerBatallonPorId = function (req, res) {
 };
 
 /*ATAQUES*/
-//ingresar nuevo ataque por id
-exports.atacarBatallonPorId = function (req, res) {
-    if (!req.params.id) {
-      return res.status(400).send({error: 'verifique los campos'}).end();
-    }
-
-    var criterio_mensaje = "que la probabilidad sea mayor o igual a un " + criterio + "%";
-    var probabilidad = generar.generar_random(1, 100);
-    var exitoso = false;
-    if(probabilidad >= criterio){
-      exitoso = true;
-    }
-
-    var nuevo_ataque = new AtaqueDirecto();
-    nuevo_ataque.probabilidad = probabilidad;
-    nuevo_ataque.ataque_exitoso = exitoso;
-    nuevo_ataque.criterio = criterio_mensaje;
-    nuevo_ataque.id_escuadron_atacado = req.params.id;
-
-    nuevo_ataque.save(function (err, ataque) {
-        if (err) {
-            return res.status(500).send({error: 'no se pudo atacar al batallon', mensaje: err}).end();
-        } else if (!err) {
-            return res.status(201).send({ok: 'batallon atacado', ataque: ataque}).end();
-        }
-    });
-};
-
 //obtener todos los ataques
-exports.obtenerAtaques = function (req, res) {
+exports.obtener_ataques = function (req, res) {
     AtaqueDirecto.find({}).exec(function (err, ataques) {
         if (err) {
             return res.status(500).send({error: 'no se pudieron obtener los ataques', mensaje: err.message}).end();
@@ -340,46 +333,61 @@ exports.obtenerAtaques = function (req, res) {
     });
 };
 
+//ingresar nuevo ataque
+exports.atacar_posicion = function (req, res) {
+    if (!req.body.longitud_ataque || !req.body.latitud_ataque) {
+        return res.status(400).send({error: 'verifique los campos'}).end();
+    }
+
+    var batallones_atacados = [];
+    Batallon.find().exec(function (err, batallones) {
+        if (err) {
+          return res.status(500).send({error: 'no se pudo atacar', mensaje: err.message}).end();
+        }
+
+        if (!batallones) {
+            return res.status(404).send({error: 'no hay batallones para atacar'}).end();
+        } else if (batallones) {
+          batallones.forEach(function(batallon){
+            //con la euclidana calculamos el resultado respecto del rango o de distancia de explosion a las tropas
+            if(Math.sqrt(Math.pow(batallon.latitud - req.body.latitud_ataque, 2) + Math.pow(batallon.longitud - req.body.longitud_ataque, 2)) <= rango){
+              batallones_atacados.push(batallon);
+            }
+          });
+
+          var criterio_mensaje = "que la probabilidad sea mayor o igual a un " + criterio + "% y las unidades de distancia a la explosion sea menor o igual a " + rango;
+          var probabilidad = generar.generar_random(1, 100);
+          var exitoso = false;
+          if(probabilidad >= criterio){
+            exitoso = true;
+          }
+
+          var nuevo_ataque = new Ataque();
+          nuevo_ataque.longitud_ataque = req.body.longitud_ataque;
+          nuevo_ataque.latitud_ataque = req.body.latitud_ataque;
+          nuevo_ataque.probabilidad = probabilidad;
+          nuevo_ataque.ataque_exitoso = exitoso;
+          nuevo_ataque.criterio = criterio_mensaje;
+          nuevo_ataque.escuadrones_atacados = batallones_atacados;
+
+          nuevo_ataque.save(function (err, ataque) {
+              if (err) {
+                  return res.status(500).send({error: 'no se pudo atacar ningun batallon', mensaje: err}).end();
+              } else if (!err) {
+                  return res.status(201).send({ok: 'batallon(es) atacado(s)', ataque: ataque}).end();
+              }
+          });
+        }
+    });
+};
+
 //borrar todos los ataques
-exports.borrarTodosLosAtaques = function (req, res) {
+exports.borrar_todos_los_ataques = function (req, res) {
     AtaqueDirecto.remove({}, function (err, usuarios) {
         if (err) {
             return res.status(500).send({error: 'no se pudieron borrar los ataques', mensaje: err.message}).end();
         } else if (!err) {
             return res.status(200).send({ok: 'ataques eliminados con éxito'}).end();
-        }
-    });
-};
-
-/*OBJETIVOS*/
-//buscar batallones cercanos a un punto
-exports.consultarPunto = function (req, res) {
-    if (!req.body.longitud || !req.body.latitud) {
-        return res.status(400).send({error: 'verifique los campos'}).end();
-    }
-
-    Batallon.find().exec(function (err, batallones) {
-        if (err) {
-          return res.status(500).send({error: 'no se pudieron encontrar los batallones cercanos', mensaje: err.message}).end();
-        }
-
-        if (!batallones || batallones.length === 0) {
-          return res.status(404).send({error: 'no hay batallones cercanos a menos de ' + rango + ' metros+ para mostrar'}).end();
-        } else if (batallones && batallones.length !== 0) {
-
-          var menor = batallones[0];
-          var euclidana_menor = funciones.euclidana(batallones[0].latitud, batallones[0].longitud, req.body.latitud, req.body.longitud);
-          var euclidana_actual;
-
-          for(var i = 1; i < batallones.length; i++){
-            euclidana_actual = funciones.euclidana(batallones[i].latitud, batallones[i].longitud, req.body.latitud, req.body.longitud);
-
-            if(euclidana_actual < euclidana_menor){
-              menor = batallones[i];
-            }
-          }
-
-          return res.status(200).send({error: 'batallon cercano encontrado con éxito', batallon: menor}).end();
         }
     });
 };
