@@ -22,7 +22,7 @@ var niveles_militares = validar.obtener_niveles_militares();
 exports.main = function (req, res) {
     res.statusCode = 200;
     res.setHeader('Contente-Type', 'text/plain');
-    return res.status(200).send({ok: 'Cargado con éxito'}).end();
+    return res.status(200).send({ok: 'Cargado con éxito...'}).end();
 };
 
 //ingresar nuevo usuario
