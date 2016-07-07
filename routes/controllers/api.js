@@ -31,6 +31,10 @@ exports.ingresar_nuevo_usuario = function (req, res) {
         return res.status(400).send({error: 'verifique los campos'}).end();
     }
 
+    if (req.body.nivel_militar && !validar.nivel_militar(req.body.nivel_militar)) {
+      return res.status(400).send({error: 'nivel militar a ingresar no valido, los niveles disponibles son:', niveles_militares: niveles_militares}).end();
+    }
+
     var nuevo_usuario = new Usuario();
     nuevo_usuario.usuario = req.body.usuario.toLowerCase();
     nuevo_usuario.nombre = req.body.nombre.toLowerCase();
@@ -39,10 +43,6 @@ exports.ingresar_nuevo_usuario = function (req, res) {
     nuevo_usuario.edad = req.body.edad;
     nuevo_usuario.nivel_militar = req.body.nivel_militar.toLowerCase();
     nuevo_usuario.habilitado_para_usar_app = req.body.habilitado_para_usar_app;
-
-    if (!validar.nivel_militar(nuevo_usuario.nivel_militar)) {
-        res.status(400).send({error: 'nivel militar a ingresar no valido, los niveles disponibles son: ', niveles_militares: niveles_militares}).end();
-    }
 
     nuevo_usuario.save(function (err, usuario) {
         if (err) {
@@ -145,7 +145,7 @@ exports.borrar_usuario_por_id = function (req, res) {
 //modificar usuario por id
 exports.modificar_usario_por_id = function (req, res) {
     if (req.body.nivel_militar && !validar.nivel_militar(req.body.nivel_militar)) {
-      res.status(400).send({error: 'nivel militar a ingresar no valido, los niveles disponibles son:', niveles_militares: niveles_militares}).end();
+      return res.status(400).send({error: 'nivel militar a ingresar no valido, los niveles disponibles son:', niveles_militares: niveles_militares}).end();
     }
 
     Usuario.findOne({
