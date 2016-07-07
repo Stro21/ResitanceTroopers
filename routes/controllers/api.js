@@ -325,7 +325,7 @@ exports.atacarBatallonPorId = function (req, res) {
               nuevo_ataque.probabilidad = probabilidad;
               nuevo_ataque.ataque_exitoso = exitoso;
               nuevo_ataque.criterio = criterio_mensaje;
-              nuevo_ataque.id_escuadron_atacado = req.params.id;
+              nuevo_ataque.id_escuadron = req.params.id;
 
               nuevo_ataque.save(function (err, ataque) {
                   if (err) {
