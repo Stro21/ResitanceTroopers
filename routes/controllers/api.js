@@ -424,7 +424,7 @@ exports.login = function (req, res) {
 
         if (usuario) {
             if (encriptar.pbkdf2(req.body.contraseña) != usuario.contraseña) {
-              return res.status(404).send({error: 'usuario y/o contraseña no válidas 2'}).end();
+              return res.status(404).send({error: 'usuario y/o contraseña no válidas'}).end();
             } else {
                 var datos = {
                     usuario: req.body.usuario.toLowerCase(),
