@@ -16,6 +16,7 @@ var validar = require("../../functions/validar");
 var encriptar = require("../../functions/encriptar");
 var generar = require("../../functions/generar");
 var key = require("../../functions/key").key();
+var niveles_militares = validar.obtener_niveles_militares();
 
 //pagina inicial
 exports.main = function (req, res) {
@@ -40,7 +41,7 @@ exports.ingresar_nuevo_usuario = function (req, res) {
     nuevo_usuario.habilitado_para_usar_app = req.body.habilitado_para_usar_app;
 
     if (!validar.nivel_militar(nuevo_usuario.nivel_militar)) {
-        res.status(400).send({error: 'nivel militar a ingresar no valido (soldado, oficial o capitán)'}).end();
+        res.status(400).send({error: 'nivel militar a ingresar no valido, los niveles disponibles son: ', niveles_militares: niveles_militares}).end();
     }
 
     nuevo_usuario.save(function (err, usuario) {
@@ -144,7 +145,7 @@ exports.borrar_usuario_por_id = function (req, res) {
 //modificar usuario por id
 exports.modificar_usario_por_id = function (req, res) {
     if (req.body.nivel_militar && !validar.nivel_militar(req.body.nivel_militar)) {
-        return res.status(400).send({error: 'nivel militar a modificar no valido (soldado, oficial o capitán)'}).end();
+      res.status(400).send({error: 'nivel militar a ingresar no valido, los niveles disponibles son:', niveles_militares: niveles_militares}).end();
     }
 
     Usuario.findOne({
@@ -339,7 +340,7 @@ exports.atacar_posicion = function (req, res) {
             }
           });
 
-          var criterio_mensaje = "que la probabilidad sea mayor o igual a un " + criterio + "% y las unidades de distancia sea menor o igual a " + rango;
+          var criterio_mensaje = "que la probabilidad sea mayor o igual a un " + criterio + "% y las unidades de distancia a la explosion sea menor o igual a " + rango;
           var probabilidad = generar.generar_random(1, 100);
           var exitoso = false;
           if(probabilidad >= criterio){
