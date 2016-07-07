@@ -7,7 +7,7 @@ niveles_militares.push("general");
 
 exports.obtener_niveles_militares = function(){
   return niveles_militares;
-};
+}; 
 
 exports.nivel_militar = function (nivel) {
 
