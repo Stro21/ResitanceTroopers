@@ -1,7 +1,7 @@
 var jwt = require("jsonwebtoken");
 var mongoose = require("mongoose");
-var db = "mongodb://ejemplo:xxeduhxx22@ds023064.mlab.com:23064/heroku_x76mjpd2";
-//var db = "mongodb://localhost/trooper";
+//var db = "mongodb://ejemplo:xxeduhxx22@ds023064.mlab.com:23064/heroku_x76mjpd2";
+var db = "mongodb://localhost/trooper";
 var rango = 100;
 var criterio = 80;
 
@@ -22,7 +22,7 @@ var niveles_militares = validar.obtener_niveles_militares();
 exports.main = function (req, res) {
     res.statusCode = 200;
     res.setHeader('Contente-Type', 'text/plain');
-    return res.status(200).send({ok: 'Cargado con éxito'}).end();
+    return res.status(200).send({ok: 'Cargado con éxito...'}).end();
 };
 
 //ingresar nuevo usuario
