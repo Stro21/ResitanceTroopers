@@ -297,6 +297,27 @@ exports.obtenerBatallonPorId = function (req, res) {
 };
 
 /*ATAQUES*/
+//obtener ataque por id
+exports.obtenerAtaquePorId = function (req, res) {
+    if (!req.params.id) {
+        return res.status(400).send({error: 'verifique los campos'}).end();
+    }
+
+    Ataque.findOne({
+        _id: req.params.id
+    }).exec(function (err, ataque) {
+        if (err) {
+            return res.status(500).send({error: 'no se pudo obtener el ataque', mensaje: err.message}).end();
+        }
+
+        if (!ataque) {
+            return res.status(404).send({error: 'no se encontró el ataque'}).end();
+        } else if (ataque) {
+            return res.status(200).send({ok: 'ataque obtenido con éxito', ataque: ataque}).end();
+        }
+    });
+};
+
 //ingresar nuevo ataque por id
 exports.atacarBatallonPorId = function (req, res) {
     if (!req.params.id) {

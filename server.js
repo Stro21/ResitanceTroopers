@@ -59,6 +59,8 @@ app.post("/objetivos", api.consultarPunto);
 app.post("/ataques/:id", api.atacarBatallonPorId);
 //obtener todos los ataques
 app.get("/ataques", api.obtenerAtaques);
+//obtener ataque por id
+app.get("/ataques/:id", api.obtenerAtaquePorId);
 //borrar todos los ataques
 app.delete("/ataques", api.borrarTodosLosAtaques);
 
