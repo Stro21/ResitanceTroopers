@@ -432,7 +432,7 @@ exports.login = function (req, res) {
                 };
 
                 token = jwt.sign(datos, key, {
-                    expiresIn: '24h' //expira en 24 horas tambien puedes ser 10d = 10 dias o 2 days = 2 dias
+                    expiresIn: '2m' //expira en 24 horas tambien puedes ser 10d = 10 dias o 2 days = 2 dias
                 });
                 return res.status(200).send({ok: 'logeado con éxito', token: token}).end();
             }
