@@ -303,7 +303,7 @@ exports.obtenerAtaquePorId = function (req, res) {
         return res.status(400).send({error: 'verifique los campos'}).end();
     }
 
-    Ataque.findOne({
+    AtaqueDirecto.findOne({
         _id: req.params.id
     }).exec(function (err, ataque) {
         if (err) {
